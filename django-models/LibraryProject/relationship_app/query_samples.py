@@ -4,7 +4,7 @@ import django
 
 #Query all books by a specific author.
 def get_books_by_author(author):
-    author = Author.objects.get(name=author)
+    author = Author.objects.get(name=author_name)
     books = Book.objects.filter(author=author)
     return books
 #List all books in a library.
