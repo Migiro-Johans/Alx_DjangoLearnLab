@@ -12,6 +12,7 @@ class Author(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books")
+    published_date = models.DateField(null=True, blank=True)
     class Meta:
         permissions = [
             ("can_add_book", "Can add a new book"),
