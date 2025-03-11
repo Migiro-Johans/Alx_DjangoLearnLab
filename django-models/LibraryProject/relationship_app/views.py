@@ -1,24 +1,23 @@
-from django.shortcuts import render,get_object_or_404, redirect
-from .models import Book
-from django.views.generic  import DetailView
-from .models import Library
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import DetailView
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import user_passes_test
-from .models import UserProfile
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from .models import Book, Library, UserProfile
 from .forms import BookForm
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
-# Create your views here.
-#function-based view to list all books
 
+# Create your views here.
+
+# Function-based view to list all books
 def list_books(request):
     books = Book.objects.all()
     return render(request, "relationship_app/list_books.html", {"books": books})
+
 class LibraryDetailView(DetailView):
     model = Library
     template_name = "relationship_app/library_detail.html"
     context_object_name = "library"
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -44,7 +43,8 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('login')  # Redirect to login page after logout
-#user based role control
+
+# User-based role control
 # Role checking functions
 def is_admin(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
@@ -72,6 +72,7 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
 @login_required
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
@@ -105,4 +106,3 @@ def delete_book(request, book_id):
         book.delete()
         return redirect('book-list')
     return render(request, 'book_confirm_delete.html', {'book': book})
-
